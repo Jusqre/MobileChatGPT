@@ -9,16 +9,22 @@ import com.jusqre.domain.model.ChattingItem
 import com.jusqre.presentation.databinding.ItemChattingBinding
 
 class ChattingAdapter(
-    private val onClick: (ChattingItem) -> Unit
+    private val onClick: (ChattingItem) -> Unit,
+    private val onLongClick: () -> Unit
 ) : ListAdapter<ChattingItem, ChattingAdapter.ViewHolder>(diffUtil) {
     class ViewHolder(
         private val binding: ItemChattingBinding,
-        private val onClick: (ChattingItem) -> Unit
+        private val onClick: (ChattingItem) -> Unit,
+        private val onLongClick: () -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ChattingItem) {
             binding.chattingItem = item
             binding.root.setOnClickListener {
                 onClick(item)
+            }
+            binding.root.setOnLongClickListener {
+                onLongClick()
+                true
             }
         }
     }
@@ -27,7 +33,7 @@ class ChattingAdapter(
         val binding =
             ItemChattingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return ViewHolder(binding, onClick)
+        return ViewHolder(binding, onClick, onLongClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
