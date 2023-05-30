@@ -22,6 +22,12 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<UIState> = _uiState
     private val _chattingListState = MutableSharedFlow<List<ChattingItem>>()
     val chattingListState: SharedFlow<List<ChattingItem>> = _chattingListState
+    private val _editModeActivated = MutableStateFlow(false)
+    val editModeActivated: StateFlow<Boolean> = _editModeActivated
+
+    val isEditModeActivated: Boolean
+        get() = editModeActivated.value
+
     fun getItem() {
         viewModelScope.launch {
             with(chatRepository.getAll()) {
@@ -47,6 +53,12 @@ class HomeViewModel @Inject constructor(
     fun resetUIState() {
         viewModelScope.launch {
             _uiState.emit(UIState.READY)
+        }
+    }
+
+    fun changeEditModeStatus() {
+        viewModelScope.launch {
+            _editModeActivated.emit(editModeActivated.value.not())
         }
     }
 }
