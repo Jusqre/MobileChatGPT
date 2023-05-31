@@ -50,6 +50,13 @@ class HomeViewModel @Inject constructor(
         return ChattingItem(newID, listOf(),"")
     }
 
+    fun deleteChat(id : String) {
+        viewModelScope.launch {
+            chatRepository.deleteById(id)
+            getItem()
+        }
+    }
+
     fun resetUIState() {
         viewModelScope.launch {
             _uiState.emit(UIState.READY)

@@ -2,6 +2,7 @@ package com.jusqre.presentation.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.Animation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +11,9 @@ import com.jusqre.presentation.databinding.ItemChattingBinding
 
 class ChattingAdapter(
     private val onClick: (ChattingItem) -> Unit,
-    private val onLongClick: () -> Unit
+    private val onLongClick: () -> Unit,
+    private val editModeStatus: () -> Boolean,
+    private val animation: Animation
 ) : ListAdapter<ChattingItem, ChattingAdapter.ViewHolder>(diffUtil) {
     class ViewHolder(
         private val binding: ItemChattingBinding,
@@ -37,6 +40,11 @@ class ChattingAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (editModeStatus()) {
+            holder.itemView.startAnimation(animation)
+        } else {
+            holder.itemView.clearAnimation()
+        }
         holder.bind(getItem(position))
     }
 

@@ -1,5 +1,6 @@
 package com.jusqre.presentation.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.core.view.forEach
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -24,15 +24,22 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val homeViewModel: HomeViewModel by viewModels()
-    private val chattingAdapter = ChattingAdapter(
-        onClick = {
-            chattingOnClickEvent(it)
-        },
-        onLongClick = {
-            homeViewModel.changeEditModeStatus()
-        }
-    )
-    val rotationAnimation : Animation by lazy {
+    private val chattingAdapter by lazy {
+        ChattingAdapter(
+            onClick = {
+                chattingOnClickEvent(it)
+            },
+            onLongClick = {
+                homeViewModel.changeEditModeStatus()
+            },
+            editModeStatus = {
+                homeViewModel.isEditModeActivated
+            },
+            animation = rotationAnimation
+        )
+    }
+
+    private val rotationAnimation: Animation by lazy {
         AnimationUtils.loadAnimation(context, R.anim.rotation)
     }
 
@@ -68,6 +75,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initializeCollector() {
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             homeViewModel.uiState.collectLatest {
@@ -81,18 +89,7 @@ class HomeFragment : Fragment() {
         }
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
             homeViewModel.editModeActivated.collectLatest {
-                when (it) {
-                    true -> {
-                        binding.rvChatList.forEach { chat ->
-                            chat.startAnimation(rotationAnimation)
-                        }
-                    }
-                    false -> {
-                        binding.rvChatList.forEach { chat ->
-                            chat.clearAnimation()
-                        }
-                    }
-                }
+                chattingAdapter.notifyDataSetChanged()
             }
         }
     }
@@ -106,6 +103,7 @@ class HomeFragment : Fragment() {
             )
 
             true -> {
+                homeViewModel.deleteChat(chattingItem.chatId)
             }
         }
     }
