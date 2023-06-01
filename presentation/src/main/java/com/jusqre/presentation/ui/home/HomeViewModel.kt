@@ -32,11 +32,12 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             with(chatRepository.getAll()) {
                 if (isEmpty()) {
+                    _editModeActivated.emit(false)
                     _uiState.emit(UIState.EMPTY_LIST)
                 } else {
                     _uiState.emit(UIState.GET_LIST)
-                    _chattingListState.emit(this)
                 }
+                _chattingListState.emit(this)
             }
 
         }
