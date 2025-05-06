@@ -1,4 +1,4 @@
-package com.jusqre.mobilechatgpt.ui.dashboard
+package com.jusqre.presentation.ui.dashboard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
